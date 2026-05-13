@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bravo_7_robot">
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+
+    <!-- Import bravo_7_robot urdf file -->
+    <xacro:include filename="$(find bravo_7_description)/urdf/bravo_7_robot.xacro" />
+
+    <!-- Import control_xacro -->
+    <xacro:include filename="bravo_7_robot.ros2_control.xacro" />
+
+
+    <xacro:bravo_7_robot_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+
+</robot>

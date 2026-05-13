@@ -1,0 +1,23 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: bravo_7_description
+    relative_path: urdf/bravo_7_robot.xacro
+  srdf:
+    relative_path: config/bravo_7_robot.srdf
+  package_settings:
+    author_name: Prakarn Jaroonsorn
+    author_email: PrakarnJ@arv.co.th
+    generated_timestamp: 1738290342
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position

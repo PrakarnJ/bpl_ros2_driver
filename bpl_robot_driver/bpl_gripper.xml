@@ -1,0 +1,11 @@
+<library path="bpl_gripper">
+
+  <class name="bpl_robot_driver/BPLGripperHardwareInterface" 
+         type="bpl_robot_driver::BPLGripperHardwareInterface" 
+         base_class_type="hardware_interface::ActuatorInterface">
+    <description>
+      Hardware interface for gripper finger_jaws
+    </description>
+  </class>
+
+</library>

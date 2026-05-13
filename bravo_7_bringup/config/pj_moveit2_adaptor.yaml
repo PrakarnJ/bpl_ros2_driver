@@ -1,0 +1,12 @@
+pj_moveit2_adaptor_node:
+  ros__parameters:
+    move_group_name: "bravo_7_arm" # Often 'manipulator' or 'arm'
+    base_frame_name: "bravo_base_link" # The MoveIt planning frame. Often 'base_footprint' or 'world'
+    ee_frame_name: "bravo_tcp" # The name of the end effector link, used to return the EE pose
+    camera_frame_name: "rs_d435i_color_optical_frame" # The name of the camera frame, used to add object to planning scene
+
+    attach_obj_link_name: ["bravo_jaws_base_link", "bravo_finger_jaws_rs2_300_link", "bravo_finger_jaws_rs2_301_link"] # array element 1 must be gripper base link
+    
+    cartesian_resolution: 0.01  # the Cartesian path to be interpolated at a resolution of 1 cm
+
+    dof: 6

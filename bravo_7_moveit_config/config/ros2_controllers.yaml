@@ -1,0 +1,39 @@
+# This config file is used by ros2_control
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    bravo_7_position_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    bravo_7_hand_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+bravo_7_position_controller:
+  ros__parameters:
+    joints:
+      - bravo_axis_g
+      - bravo_axis_f
+      - bravo_axis_e
+      - bravo_axis_d
+      - bravo_axis_c
+      - bravo_axis_b
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true
+bravo_7_hand_controller:
+  ros__parameters:
+    joints:
+      - bravo_axis_a
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    allow_nonzero_velocity_at_trajectory_end: true

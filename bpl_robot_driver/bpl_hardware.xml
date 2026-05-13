@@ -1,0 +1,11 @@
+<library path="bpl_hardware">
+
+  <class name="bpl_robot_driver/BPLRobotHardwareInterface" 
+         type="bpl_robot_driver::BPLRobotHardwareInterface" 
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Hardware interface for bravo 7 ft robots
+    </description>
+  </class>
+
+</library>

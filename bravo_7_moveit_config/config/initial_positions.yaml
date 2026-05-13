@@ -1,0 +1,10 @@
+# Default initial positions for bravo_7_robot's ros2_control fake system
+
+initial_positions:
+  bravo_axis_a: 0
+  bravo_axis_g: 1.5708
+  bravo_axis_f: 3.10
+  bravo_axis_e: 0.09305
+  bravo_axis_d: 3.14
+  bravo_axis_c: 0.15
+  bravo_axis_b: 3.1416

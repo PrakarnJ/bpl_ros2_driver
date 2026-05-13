@@ -1,0 +1,5 @@
+ros2_control_client_node:
+  ros__parameters:
+    controller_state: "joint_state_broadcaster" # Name of ros2 controller joint state
+    controller_default: "bravo_7_position_controller" # Name of ros2 controller default
+    controller_servo: "forward_position_controller" # Name of ros2 controller for moveit2_servo

@@ -1,0 +1,26 @@
+publisher_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "bravo_7_position_controller"
+    wait_sec_between_publish: 8
+
+    goal_names: ["pos1", "pos2"]
+    pos1: [2.5807, 2.567, 0.15453, 3.09729, 0.12522, 0.6]
+    pos2: [1.4980, 3.1000, 0.15452, 3.0972, 0.05199, 0.1]
+
+    joints:
+      - bravo_axis_g
+      - bravo_axis_f
+      - bravo_axis_e
+      - bravo_axis_d
+      - bravo_axis_c
+      - bravo_axis_b
+
+    check_starting_point: false
+    starting_point_limits:
+      bravo_axis_b: [-0.1,0.1]
+      bravo_axis_c: [-0.1,0.1]
+      bravo_axis_d: [-0.1,0.1]
+      bravo_axis_e: [-0.1,0.1]
+      bravo_axis_f: [-0.1,0.1]
+      bravo_axis_g: [-0.1,0.1]

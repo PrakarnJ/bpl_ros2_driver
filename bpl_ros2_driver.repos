@@ -1,0 +1,17 @@
+repositories:
+  pj_moveit2_adaptor:
+    type: git
+    url: git@github.com:PrakarnJ/pj_moveit2_adaptor.git
+    version: main
+  pj_moveit2_msgs:
+    type: git
+    url: git@github.com:PrakarnJ/pj_moveit2_msgs.git
+    version: main
+  bravo_7_description:
+    type: git
+    url: git@github.com:PrakarnJ/bravo_7_description.git
+    version: main
+  bravo_7_gazebo:
+    type: git
+    url: git@github.com:PrakarnJ/bravo_7_gazebo.git
+    version: main

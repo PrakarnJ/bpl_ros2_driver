@@ -1,0 +1,26 @@
+# MoveIt uses this configuration for controller management
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - bravo_7_position_controller
+    - bravo_7_hand_controller
+
+  bravo_7_position_controller:
+    type: FollowJointTrajectory
+    joints:
+      - bravo_axis_g
+      - bravo_axis_f
+      - bravo_axis_e
+      - bravo_axis_d
+      - bravo_axis_c
+      - bravo_axis_b
+    action_ns: follow_joint_trajectory
+    default: true
+  bravo_7_hand_controller:
+    type: FollowJointTrajectory
+    joints:
+      - bravo_axis_a
+    action_ns: follow_joint_trajectory
+    default: true
