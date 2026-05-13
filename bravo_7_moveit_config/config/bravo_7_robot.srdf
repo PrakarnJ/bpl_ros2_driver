@@ -17,6 +17,7 @@
         <joint name="bravo_axis_c"/>
         <joint name="bravo_axis_b"/>
         <joint name="tcp_joint"/>
+        <link name="bravo_jaws_base_link"/>
     </group>
     <group name="hand">
         <link name="bravo_jaws_base_link"/>
@@ -35,8 +36,8 @@
         <joint name="bravo_axis_f" value="3.1"/>
         <joint name="bravo_axis_g" value="1.5708"/>
     </group_state>
-    <group_state name="move_to_preside" grpup="bravo_7_arm">
-        <joint name="bravo_axis_b" values="3.14159"/>
+    <group_state name="move_to_preside" group="bravo_7_arm">
+        <joint name="bravo_axis_b" value="3.14159"/>
         <joint name="bravo_axis_c" value="2.20935"/>
         <joint name="bravo_axis_d" value="0.03264"/>
         <joint name="bravo_axis_e" value="1.35937"/>

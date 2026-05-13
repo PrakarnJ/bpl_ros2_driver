@@ -13,67 +13,37 @@
 # limitations under the License.
 
 import os
-import yaml
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
-from launch.substitutions import LaunchConfiguration, Command
-from launch.launch_description_sources import AnyLaunchDescriptionSource
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition, UnlessCondition
 from moveit_configs_utils import MoveItConfigsBuilder
-
-def load_file(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-
-    try:
-        with open(absolute_file_path, 'r') as file:
-            return file.read()
-    except EnvironmentError: # parent of IOError, OSError *and* WindowsError where available
-        return None
-
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-
-    try:
-        with open(absolute_file_path, 'r') as file:
-            return yaml.safe_load(file)
-    except EnvironmentError: # parent of IOError, OSError *and* WindowsError where available
-        return None
 
 
 def generate_launch_description():
-    ros2_control_hardware_type = DeclareLaunchArgument(
-        "ros2_control_hardware_type",
-        default_value="mock_components",
-        description="ROS 2 control hardware interface type to use for the launch file -- possible values: [mock_components, isaac]",
+
+    # Use absolute path so MoveItConfigsBuilder loads the same URDF as the
+    # fake controller launch (bravo_7_robot.fake.xacro has both arm + gripper
+    # joints that the SRDF references; bravo_7_robot.urdf.xacro only has arm).
+    fake_urdf_path = os.path.join(
+        get_package_share_directory("bravo_7_description"),
+        "urdf",
+        "bravo_7_robot.fake.xacro",
     )
 
     moveit_config = (
-        MoveItConfigsBuilder("bravo_7")
-        .robot_description(
-            file_path="config/bravo_7_robot.urdf.xacro",
-            mappings={
-                "ros2_control_hardware_type": LaunchConfiguration(
-                    "ros2_control_hardware_type"
-                )
-            },
-        )
+        MoveItConfigsBuilder("bravo_7", package_name="bravo_7_moveit_config")
+        .robot_description(file_path=fake_urdf_path)
         .robot_description_semantic(file_path="config/bravo_7_robot.srdf")
         .robot_description_kinematics(file_path="config/kinematics.yaml")
-        .planning_scene_monitor(
-            publish_robot_description=True, publish_robot_description_semantic=True
-        )
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
-        .planning_pipelines(
-            pipelines=["ompl"]
+        .planning_pipelines(pipelines=["ompl"])
+        .planning_scene_monitor(
+            publish_robot_description=False,
+            publish_robot_description_semantic=True,
         )
         .to_moveit_configs()
     )
 
-    # Start the actual move_group node/action server
     run_move_group_node = Node(
         package="moveit_ros_move_group",
         executable="move_group",
@@ -81,72 +51,51 @@ def generate_launch_description():
         parameters=[moveit_config.to_dict()],
         arguments=["--ros-args", "--log-level", "info"],
     )
- 
-    parameters_file_name = 'pj_moveit2_adaptor.yaml'
 
     parameters_file_path = os.path.join(
-        get_package_share_directory('bravo_7_bringup'),
-        'config',
-        parameters_file_name)
+        get_package_share_directory("bravo_7_bringup"),
+        "config",
+        "pj_moveit2_adaptor.yaml",
+    )
 
-    # MoveGroupInterface demo executable
-    pj_moveit2_adaptor_node = Node(name='pj_moveit2_adaptor_node',
-                               package='pj_moveit2_adaptor',
-                               executable='pj_moveit2_adaptor_node',
-                               output='screen',
-                            #    arguments=['--ros-args', '--log-level', 'DEBUG'],
-                            #    prefix=['gdb -ex=r --args'],
-                               parameters=[moveit_config.robot_description,
-                                           moveit_config.robot_description_semantic,
-                                           moveit_config.robot_description_kinematics,
-                                           parameters_file_path,
-                                           ]
-                               )
-    
+    pj_moveit2_adaptor_node = Node(
+        name="pj_moveit2_adaptor_node",
+        package="pj_moveit2_adaptor",
+        executable="pj_moveit2_adaptor_node",
+        output="screen",
+        parameters=[
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.robot_description_kinematics,
+            parameters_file_path,
+        ],
+    )
 
-
-    model = LaunchConfiguration('model')
-    declare_model_cmd = DeclareLaunchArgument(
-            'model',
-            default_value='bravo_7_robot.fake.xacro',
-            description='Robot model .xacro')
-
-    # Publish TF
-    robot_state_publisher = IncludeLaunchDescription(AnyLaunchDescriptionSource(os.path.join(
-            get_package_share_directory('bravo_7_description'), 'launch', 'robot_description.launch.py')),
-            launch_arguments={'model': model}.items())
+    switch_controller_node = Node(
+        package="pj_moveit2_adaptor",
+        executable="switch_controllers.py",
+        output="screen",
+        parameters=[
+            os.path.join(
+                get_package_share_directory("bravo_7_bringup"),
+                "config",
+                "switch_controller.yaml",
+            )
+        ],
+        respawn=True,
+        respawn_delay=2.0,
+        prefix="bash -c 'sleep 2; $0 $@' ",
+    )
 
     joy_node = Node(
-        package='joy',
-        executable='joy_node',
-        name='joy_node'
+        package="joy",
+        executable="joy_node",
+        name="joy_node",
     )
 
-    oru_moveit_path = os.path.join(
-        get_package_share_directory('bravo_7_moveit_config'), 'launch/fake')
-
-    moveit_servo = IncludeLaunchDescription(
-        AnyLaunchDescriptionSource(os.path.join(
-            oru_moveit_path, 'bravo_7_fake_servo_teleop.launch.py'))
-    )
-
-    # Warehouse mongodb server
-    mongodb_server_node = Node(package='warehouse_ros_mongo',
-                               executable='mongo_wrapper_ros.py',
-                               parameters=[{'warehouse_port': 33829},
-                                           {'warehouse_host': 'localhost'},
-                                           {'warehouse_plugin': 'warehouse_ros_mongo::MongoDatabaseConnection'}],
-                               output='screen')
-    
     ld = LaunchDescription()
-
-    ld.add_action(declare_model_cmd)
-    ld.add_action(robot_state_publisher)
-    ld.add_action(ros2_control_hardware_type)
-    ld.add_action(pj_moveit2_adaptor_node)
     ld.add_action(run_move_group_node)
-    # ld.add_action(moveit_servo)
+    ld.add_action(pj_moveit2_adaptor_node)
+    # ld.add_action(switch_controller_node)
     ld.add_action(joy_node)
-    # ld.add_action(mongodb_server_node)
-
     return ld
